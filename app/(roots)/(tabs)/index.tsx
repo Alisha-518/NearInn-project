@@ -32,7 +32,6 @@ import { Card, FeaturedCard } from "@/components/Cards"; // Card components for 
 import { useAppwrite } from "@/lib/useAppwrite"; // Custom hook for Appwrite API calls.
 import { useGlobalContext } from "@/lib/global-provider"; // Access global context (e.g., user info).
 import { getLatestProperties, getProperties } from "@/lib/appwrite"; // API functions for fetching property data.
-import seed from "@/lib/seed";
 
 const Home = () => {
   const { user } = useGlobalContext(); // Retrieve the current user's information.
@@ -76,7 +75,6 @@ const Home = () => {
   return (
     <SafeAreaView className="h-full bg-white">
       {/* FlatList to display recommended properties in a grid layout */}
-      <Button title="seed" onPress={seed} />
       <FlatList
         data={properties} // Data source for the FlatList.
         numColumns={2} // Number of columns in the grid layout.

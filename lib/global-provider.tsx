@@ -1,7 +1,6 @@
 //lib\global-provider.tsx
 
-import React, { createContext, useContext, ReactNode } from "react";
-
+import React, { createContext, useContext, ReactNode, useState } from "react";
 import { getCurrentUser } from "./appwrite";
 import { useAppwrite } from "./useAppwrite";
 import { Redirect } from "expo-router";
@@ -10,6 +9,8 @@ interface GlobalContextType {
   isLogged: boolean;
   user: User | null;
   loading: boolean;
+  refreshTrigger: boolean; // ✅ Add refresh state
+  setRefreshTrigger: React.Dispatch<React.SetStateAction<boolean>>;
   refetch: (newParams?: Record<string, string | number>) => void;
 }
 
@@ -27,14 +28,24 @@ interface GlobalProviderProps {
 }
 
 export const GlobalProvider = ({ children }: GlobalProviderProps) => {
+  const [user, setUser] = useState<User | null>(null); // ✅ Keep this
+  const [refreshTrigger, setRefreshTrigger] = useState(false); // ✅ Add refresh state
+
   const {
-    data: user,
+    data: fetchedUser, // ✅ Renamed `user` to `fetchedUser`
     loading,
-    refetch, // refetch already expects params in useAppwrite
+    refetch,
   } = useAppwrite({
     fn: getCurrentUser,
-    params: {}, // Ensure default empty params
+    params: {},
   });
+
+  // ✅ Update `user` state whenever `fetchedUser` changes
+  React.useEffect(() => {
+    if (fetchedUser) {
+      setUser(fetchedUser);
+    }
+  }, [fetchedUser]);
 
   const isLogged = !!user;
 
@@ -43,8 +54,10 @@ export const GlobalProvider = ({ children }: GlobalProviderProps) => {
       value={{
         isLogged,
         user,
+        refreshTrigger, // ✅ Pass refresh state
+        setRefreshTrigger, // ✅ Allow updating refresh state
         loading,
-        refetch: (params) => refetch(params ?? {}), // Ensure default empty object
+        refetch: (params) => refetch(params ?? {}),
       }}
     >
       {children}

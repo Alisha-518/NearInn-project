@@ -1,3 +1,5 @@
+//lib\appwrite.ts
+
 import {
   Client,
   Account,
@@ -10,6 +12,7 @@ import {
 } from "react-native-appwrite";
 import * as Linking from "expo-linking";
 import { openAuthSessionAsync } from "expo-web-browser";
+import * as FileSystem from "expo-file-system";
 
 export const config = {
   platform: "com.jsm.nearby",
@@ -22,6 +25,7 @@ export const config = {
   agentsCollectionId: process.env.EXPO_PUBLIC_APPWRITE_AGENTS_COLLECTION_ID,
   propertiesCollectionId:
     process.env.EXPO_PUBLIC_APPWRITE_PROPERTIES_COLLECTION_ID,
+    productsCollectionId: process.env.EXPO_PUBLIC_APPWRITE_PRODUCTS_COLLECTION_ID,
   bucketId: process.env.EXPO_PUBLIC_APPWRITE_BUCKET_ID,
 };
 
@@ -162,6 +166,43 @@ export async function getPropertyById({ id }: { id: string }) {
     return result;
   } catch (error) {
     console.error(error);
+    return null;
+  }
+}
+
+// ✅ Upload Image to Appwrite Storage and Get Public URL
+
+export async function uploadImageToStorage(imageUri: string): Promise<string | null> {
+  try {
+    // Extract file name from URI
+    const fileName = imageUri.split("/").pop() || `image-${Date.now()}.jpg`;
+
+    // Get file size (Appwrite requires `size`)
+    const fileInfo = await FileSystem.getInfoAsync(imageUri);
+    if (!fileInfo.exists) {
+      throw new Error("File does not exist");
+    }
+
+    // Create the file object with required properties
+    const file = {
+      uri: imageUri,
+      name: fileName,
+      type: "image/jpeg", // Adjust based on file type if needed
+      size: fileInfo.size, // ✅ Required for Appwrite
+    };
+
+    console.log("📌 Uploading Image:", file);
+
+    // Upload to Appwrite Storage
+    const uploadedFile = await storage.createFile(config.bucketId!, ID.unique(), file);
+
+    // ✅ Convert URL to string to avoid type errors
+    const imageUrl = storage.getFileView(config.bucketId!, uploadedFile.$id).toString();
+
+    console.log("✅ Image Uploaded. URL:", imageUrl);
+    return imageUrl;
+  } catch (error) {
+    console.error("❌ Error uploading image:", error);
     return null;
   }
 }

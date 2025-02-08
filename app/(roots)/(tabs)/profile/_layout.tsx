@@ -4,8 +4,14 @@ import { Stack } from "expo-router";
 export default function ProfileStack() {
   return (
     <Stack>
-      <Stack.Screen name="index" options={{ title: "Profile" }} />
-      <Stack.Screen name="edit" options={{ title: "Edit Profile" }} />
+      <Stack.Screen
+        name="index"
+        options={{ title: "Profile", headerShown: false }}
+      />
+      <Stack.Screen
+        name="edit"
+        options={{ title: "Edit Profile", headerShown: false }}
+      />
       <Stack.Screen
         name="business/[id]"
         options={{ title: "Business Details", headerShown: false }}

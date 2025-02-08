@@ -10,6 +10,7 @@ export default function FormField({
   value,
   onChangeText,
   placeholder,
+  keyboardType = "default",
   ...props
 }: FormFieldProps) {
   return (
@@ -20,7 +21,8 @@ export default function FormField({
         value={value}
         onChangeText={onChangeText}
         placeholder={placeholder}
-        {...props} // Spread additional props (like keyboardType)
+        keyboardType={keyboardType}
+        {...props}
       />
     </View>
   );

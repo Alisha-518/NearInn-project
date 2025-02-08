@@ -4,13 +4,11 @@
   "extends": "expo/tsconfig.base",
   "compilerOptions": {
     "strict": true,
-    "baseUrl": "./",
     "paths": {
       "@/*": ["./*"]
     }
   },
   "include": [
-    "types/**/*",
     "**/*.ts",
     "**/*.tsx",
     ".expo/types/**/*.ts",
